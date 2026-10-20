@@ -199,16 +199,18 @@ func TestMultiplayerIntegration(t *testing.T) {
 		t.Errorf("roomCount = %d, want 1 (all clients should share a room)", got)
 	}
 
-	// Lag-compensation history must be populated on the room.
+	// Lag-compensation history must be populated on the room, and the sim must
+	// keep up. Tick/HistoryLen are the goroutine-safe mirrors: reading r.tick or
+	// r.hist directly here would race the room's tick loop.
 	hub.mu.Lock()
 	for _, r := range hub.rooms {
-		if got := r.hist.len(); got == 0 {
+		if got := r.HistoryLen(); got == 0 {
 			t.Errorf("room %s lag history empty", r.ID)
 		} else {
-			t.Logf("room %s: tick=%d history=%d/%d", r.ID, r.tick, r.hist.len(), HistoryTicks)
+			t.Logf("room %s: tick=%d history=%d/%d", r.ID, r.Tick(), got, HistoryTicks)
 		}
-		if r.tick < TickRate*simSeconds-30 {
-			t.Errorf("room %s tick=%d, sim fell behind", r.ID, r.tick)
+		if r.Tick() < TickRate*simSeconds-30 {
+			t.Errorf("room %s tick=%d, sim fell behind", r.ID, r.Tick())
 		}
 	}
 	hub.mu.Unlock()

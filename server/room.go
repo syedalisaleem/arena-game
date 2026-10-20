@@ -29,6 +29,13 @@ type Room struct {
 	stopCh   chan struct{}
 	stopped  atomic.Bool
 	lastSeen atomic.Int64 // unix millis of last player activity (for reaping)
+
+	// Observability mirrors, written by the room goroutine at the end of each
+	// tick. Readers on other goroutines (tests, metrics) must use Tick and
+	// HistoryLen instead of the room-owned fields above, which would race the
+	// simulation loop.
+	tickObs atomic.Int64
+	histObs atomic.Int64
 }
 
 type connInput struct {
@@ -56,6 +63,14 @@ func newRoom(id string, hub *Hub, seed int64) *Room {
 }
 
 func (r *Room) playerCount() int { return len(r.players) }
+
+// Tick returns the most recently completed simulation tick. Safe to call from
+// any goroutine.
+func (r *Room) Tick() int { return int(r.tickObs.Load()) }
+
+// HistoryLen returns how many ticks of lag-compensation history are stored.
+// Safe to call from any goroutine.
+func (r *Room) HistoryLen() int { return int(r.histObs.Load()) }
 
 // run is the fixed-timestep simulation loop.
 func (r *Room) run() {
@@ -171,6 +186,8 @@ func (r *Room) tickSim() {
 
 	// 3. Record lag-compensation history.
 	r.hist.record(r.tick, r.players)
+	r.tickObs.Store(int64(r.tick))
+	r.histObs.Store(int64(r.hist.len()))
 
 	// 4. Broadcast.
 	if r.tick%SnapshotEvery == 0 {
