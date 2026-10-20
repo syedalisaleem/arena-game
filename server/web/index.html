@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON ARENA</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@7.4.2/dist/pixi.min.js"></script>
+</head>
+<body>
+<div id="game-container"></div>
+
+<!-- Top-left brand -->
+<div id="brand" class="hidden">
+  <span class="brand-title">NEON ARENA</span>
+  <span id="brand-room" class="brand-room"></span>
+</div>
+
+<!-- Debug HUD (toggle with H, on by default) -->
+<div id="hud" class="hidden">
+  <div class="hud-row"><span class="hud-label">RTT</span><span id="hud-rtt">-</span></div>
+  <div class="hud-row"><span class="hud-label">TICK</span><span id="hud-tick">-</span></div>
+  <div class="hud-row"><span class="hud-label">SNAPS/S</span><span id="hud-snaps">-</span></div>
+  <div class="hud-row"><span class="hud-label">PKT IN/S</span><span id="hud-pin">-</span></div>
+  <div class="hud-row"><span class="hud-label">PKT OUT/S</span><span id="hud-pout">-</span></div>
+  <div class="hud-row"><span class="hud-label">INTERP</span><span id="hud-interp">100ms</span></div>
+  <div class="hud-row"><span class="hud-label">CORRECTIONS</span><span id="hud-corr">0</span></div>
+  <div class="hud-row"><span class="hud-label">POS</span><span id="hud-pos">-</span></div>
+  <div class="hud-row"><span class="hud-label">PLAYERS</span><span id="hud-players">-</span></div>
+  <div class="hud-note">desktop + keyboard recommended</div>
+</div>
+
+<!-- Scoreboard top-right -->
+<div id="scoreboard" class="hidden">
+  <h3>SCOREBOARD</h3>
+  <ul id="roster-list"></ul>
+</div>
+
+<!-- Kill feed bottom-left -->
+<div id="killfeed" class="hidden"></div>
+
+<!-- Controls hint -->
+<div id="controls-hint" class="hidden">WASD move &middot; mouse aim &middot; click fire &middot; H debug</div>
+
+<!-- Lobby -->
+<div id="lobby" class="overlay">
+  <div class="lobby-card">
+    <h1>NEON ARENA</h1>
+    <p class="tagline">real-time multiplayer arena &middot; 60Hz authoritative server</p>
+    <input id="name-input" type="text" maxlength="16" placeholder="call sign" autocomplete="off" spellcheck="false">
+    <button id="join-btn">JOIN ARENA</button>
+    <p id="lobby-status" class="lobby-status"></p>
+    <div class="lobby-help">
+      <span>WASD / arrows &mdash; move</span>
+      <span>mouse &mdash; aim</span>
+      <span>click &mdash; fire</span>
+      <span>H &mdash; debug HUD</span>
+    </div>
+  </div>
+</div>
+
+<!-- Respawn overlay -->
+<div id="dead-overlay" class="overlay hidden">
+  <div class="dead-card"><h2>ELIMINATED</h2><p>respawning&hellip;</p></div>
+</div>
+
+<!-- Disconnect overlay -->
+<div id="disconnect-overlay" class="overlay hidden">
+  <div class="dead-card">
+    <h2>DISCONNECTED</h2>
+    <p>connection to the arena server was lost</p>
+    <button id="reconnect-btn">RECONNECT</button>
+  </div>
+</div>
+
+<!-- Error banner -->
+<div id="error-banner" class="hidden"></div>
+
+<script src="game.js"></script>
+</body>
+</html>
